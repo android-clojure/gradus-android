@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <string name="app_name">Gradus</string>
+  <string name="your_input_fmt">Your input: %1$s</string>
+
+  <string name="query_input">Query</string>
+  <string name="query_button">Lookup</string>
+
+  <string name="api_key_input">Wordnik API Key</string>
+  <string name="api_key_save_button">Save API Key</string>
+  <string name="api_key_message_saved">API Key Updated</string>
+  <string name="api_key_message_empty">Please enter an API Key</string>
+
+</resources>

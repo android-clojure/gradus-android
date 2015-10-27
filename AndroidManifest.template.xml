@@ -24,6 +24,12 @@
         <category android:name='android.intent.category.DEFAULT'/>
       </intent-filter>
     </activity>
+    <activity android:name=".DetailActivity">
+        <intent-filter>
+        <action android:name='io.fardog.gradus.DETAIL'/>
+        <category android:name='android.intent.category.DEFAULT'/>
+      </intent-filter>
+    </activity>
     <activity android:name=".SettingsActivity">
       <intent-filter>
         <action android:name='io.fardog.gradus.SETTINGS'/>
@@ -31,6 +37,9 @@
       </intent-filter>
     </activity>
   </application>
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
   {{#debug-build}}
   <!-- Inside this section the permission will work only in debug builds (this is -->

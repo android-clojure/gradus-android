@@ -1,5 +1,6 @@
 (ns io.fardog.gradus.main
-    (:require [neko.activity :refer [defactivity set-content-view!]]
+    (:require [neko.action-bar :refer [setup-action-bar]]
+              [neko.activity :refer [defactivity set-content-view!]]
               [neko.data.shared-prefs :refer [defpreferences]]
               [neko.debug :refer [*a]]
               [neko.intent :refer [intent]]
@@ -17,7 +18,8 @@
 
 (defn- do-query
   [activity]
-  [])
+  (let [detail (intent "io.fardog.gradus.DETAIL" {})]
+    (.startActivity activity detail)))
 
 (defn- launch-settings
   [activity]
@@ -25,18 +27,20 @@
     (.startActivity activity settings)))
 
 
-(def main-layout [:linear-layout {:orientation :vertical}
-                  [:linear-layout {:orientation :horizontal
-                                   :layout-width :match-parent}
-                    [:edit-text {:id ::query-input
-                                 :layout-weight 1
-                                 :layout-width 0
-                                 :hint R$string/query_input}]
-                    [:button {:text R$string/query_button
-                              :layout-width :wrap-content
-                              :on-click (fn [_] (do-query (*a)))}]]
-                  [:button {:text "Settings"
-                            :on-click (fn [_] (launch-settings (*a)))}]])
+(defn- get-main-layout
+  [activity]
+  [:linear-layout {:orientation :vertical}
+   [:linear-layout {:orientation :horizontal
+                    :layout-width :match-parent}
+    [:edit-text {:id ::query-input
+                 :layout-weight 1
+                 :layout-width 0
+                 :hint R$string/query_input}]
+    [:button {:text R$string/query_button
+              :layout-width :wrap-content
+              :on-click (fn [_] (do-query activity))}]]
+   [:button {:text "Settings"
+             :on-click (fn [_] (launch-settings activity))}]])
 
 (defactivity io.fardog.gradus.MainActivity
   :key :main
@@ -45,6 +49,6 @@
     (.superOnCreate this bundle)
     (neko.debug/keep-screen-on this)
     (on-ui
-      (set-content-view! (*a) main-layout)
+      (set-content-view! (*a) (get-main-layout (*a)))
       (if (empty? (:api-key @prefs))
         (launch-settings (*a))))))

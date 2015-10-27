@@ -12,6 +12,8 @@
   :plugins [[lein-droid "0.4.3"]]
 
   :dependencies [[org.clojure-android/clojure "1.7.0-r2"]
+                 [org.clojure/core.incubator "0.1.3"]
+                 [clj-http-lite "0.3.0"]
                  [neko/neko "4.0.0-alpha5"]]
   :profiles {:default [:dev]
 
@@ -46,4 +48,5 @@
             :aot-exclude-ns ["clojure.parallel" "clojure.core.reducers"
                              "cider.nrepl" "cider-nrepl.plugin"
                              "cider.nrepl.middleware.util.java.parser"
+                             "clj-http.lite.cookies"
                              #"cljs-tooling\..+"]})

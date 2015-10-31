@@ -22,15 +22,10 @@
 (defpreferences prefs "gradus_preferences")
 
 (defn- get-detail-layout
-  [activity query]
+  [activity query response]
+  (pprint response)
   [:linear-layout {:orientation :vertical}
-   [:text-view {:text "Details"}]
-   [:button {:text "Check Network"
-             :on-click (fn
-                         [_]
-                         (if (check-network! activity)
-                           (toast (http-get! query) :long)
-                           (toast "not connected :(" :long)))}]])
+   [:text-view {:text query}]])
 
 (defactivity io.fardog.gradus.DetailActivity
   :key :detail
@@ -39,6 +34,7 @@
     (.superOnCreate this bundle)
     (neko.debug/keep-screen-on this)
     (on-ui
-      (let [extras (.. this getIntent getExtras)
-            query (:query (like-map extras))]
-        (set-content-view! (*a) (get-detail-layout (*a) query))))))
+      (let [extras   (.. this getIntent getExtras)
+            query    (:query (like-map extras))
+            response (http-get! query)]
+        (set-content-view! (*a) (get-detail-layout (*a) query @response))))))

@@ -24,20 +24,14 @@
         ^NetworkInfo net-info (.getActiveNetworkInfo conn-mgr)]
     (and net-info (.isConnected net-info))))
 
-;; (defn- get-download-task
-;;   [url]
-;;   (proxy [AsyncTask] []
-;;     (doInBackground [urls]
-;;       (try
-;;         (
-
 (defn http-get!
   [query]
   (if (not check-network!)
-    (throw (Exception. "No Network Connection")))
-  (let [resource  "word"
-        section   "definitions"
-        api-key   (:api-key @prefs)]
-    ;;(client/get "http://site.com/resources/3" {:accept :json})
-    (<< "https://api.wordnik.com/v4/~{resource}.json/"
-        "~{query}/~{section}?api_key=~{api-key}")))
+    (throw (Exception. "no network connection"))
+    (let [resource  "word"
+          section   "definitions"
+          api-key   (:api-key @prefs)
+          url       (<< "https://api.wordnik.com/v4/~{resource}.json/"
+                        "~{query}/~{section}?api_key=~{api-key}")]
+      (future
+        (client/get url {:accept :json})))))

@@ -1,5 +1,6 @@
 (ns io.fardog.gradus.main
-    (:require [neko.action-bar :refer [setup-action-bar]]
+    (:require [io.fardog.gradus.utils :refer [text-from-widget]]
+              [neko.action-bar :refer [setup-action-bar]]
               [neko.activity :refer [defactivity set-content-view!]]
               [neko.data.shared-prefs :refer [defpreferences]]
               [neko.debug :refer [*a]]
@@ -18,7 +19,8 @@
 
 (defn- do-query
   [activity]
-  (let [detail (intent "io.fardog.gradus.DETAIL" {})]
+  (let [query (text-from-widget (find-view activity ::query-input))
+        detail (intent "io.fardog.gradus.DETAIL" {:query query})]
     (.startActivity activity detail)))
 
 (defn- launch-settings

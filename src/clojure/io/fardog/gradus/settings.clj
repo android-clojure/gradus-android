@@ -1,5 +1,6 @@
 (ns io.fardog.gradus.settings
-    (:require [neko.action-bar :refer [setup-action-bar]]
+    (:require [io.fardog.gradus.utils :refer [text-from-widget]]
+              [neko.action-bar :refer [setup-action-bar]]
               [neko.activity :refer [defactivity set-content-view!]]
               [neko.data.shared-prefs :refer [defpreferences]]
               [neko.debug :refer [*a]]
@@ -8,7 +9,6 @@
               [neko.find-view :refer [find-view]]
               [neko.threading :refer [on-ui]])
     (:import android.widget.EditText 
-             android.widget.TextView
              [android.content Intent]))
 
 ;; We execute this function to import all subclasses of R class. This gives us
@@ -16,11 +16,6 @@
 (res/import-all)
 
 (defpreferences prefs "gradus_preferences")
-
-(defn text-from-widget
-  "Given a TextView element, get its text content"
-  [^TextView text]
-  (str (.getText text)))
 
 (defn- update-pref
   "Update the given preference"

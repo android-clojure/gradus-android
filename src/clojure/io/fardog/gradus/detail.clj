@@ -1,7 +1,9 @@
 (ns io.fardog.gradus.detail
     (:require [io.fardog.gradus.utils :refer [check-network! http-get!]]
+              [clojure.pprint :refer [pprint]]
               [neko.action-bar :refer [setup-action-bar]]
               [neko.activity :refer [defactivity set-content-view!]]
+              [neko.data :refer [like-map]]
               [neko.data.shared-prefs :refer [defpreferences]]
               [neko.debug :refer [*a]]
               [neko.intent :refer [intent]]
@@ -20,14 +22,14 @@
 (defpreferences prefs "gradus_preferences")
 
 (defn- get-detail-layout
-  [activity]
+  [activity query]
   [:linear-layout {:orientation :vertical}
    [:text-view {:text "Details"}]
    [:button {:text "Check Network"
              :on-click (fn
                          [_]
                          (if (check-network! activity)
-                           (toast (http-get!) :long)
+                           (toast (http-get! query) :long)
                            (toast "not connected :(" :long)))}]])
 
 (defactivity io.fardog.gradus.DetailActivity
@@ -37,4 +39,6 @@
     (.superOnCreate this bundle)
     (neko.debug/keep-screen-on this)
     (on-ui
-      (set-content-view! (*a) (get-detail-layout (*a))))))
+      (let [extras (.. this getIntent getExtras)
+            query (:query (like-map extras))]
+        (set-content-view! (*a) (get-detail-layout (*a) query))))))

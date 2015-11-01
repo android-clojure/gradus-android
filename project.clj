@@ -12,7 +12,7 @@
   :plugins [[lein-droid "0.4.3"]]
 
   :dependencies [[org.clojure-android/clojure "1.7.0-r2"]
-                 [org.clojure/core.incubator "0.1.3"]
+                 [org.clojure/data.json "0.2.6"]
                  [clj-http-lite "0.3.0"]
                  [neko/neko "4.0.0-alpha5"]]
   :profiles {:default [:dev]

@@ -1,5 +1,5 @@
 (ns io.fardog.gradus.detail
-    (:require [io.fardog.gradus.utils :refer [check-network! http-get!]]
+    (:require [io.fardog.gradus.utils :refer [check-network! wordnik-get!]]
               [clojure.pprint :refer [pprint]]
               [neko.action-bar :refer [setup-action-bar]]
               [neko.activity :refer [defactivity set-content-view!]]
@@ -21,11 +21,20 @@
 
 (defpreferences prefs "gradus_preferences")
 
+(defn- get-item-layout
+  [item]
+  [:text-view {:text (get item "text" "")}])
+
 (defn- get-detail-layout
   [activity query {:keys [status body]}]
-  [:linear-layout {:orientation :vertical}
-   [:text-view {:text query}]
-   [:text-view {:text body}]])
+  [:linear-layout {:orientation :vertical
+                   :layout-width :match-parent}
+   [:text-view {:id ::query
+                :text query}]
+   (into [:linear-layout {:id ::details
+                          :orientation :vertical
+                          :layout-width :match-parent}]
+         (map get-item-layout body))])
 
 (defn- get-error-layout
   [activity error]
@@ -42,7 +51,7 @@
       (try
         (let [extras   (.. this getIntent getExtras)
               query    (:query (like-map extras))
-              response (http-get! query)]
+              response (wordnik-get! query)]
           (set-content-view! (*a) (get-detail-layout (*a) query @response)))
         (catch Exception e
           (set-content-view! (*a) (get-error-layout (*a) e)))))))

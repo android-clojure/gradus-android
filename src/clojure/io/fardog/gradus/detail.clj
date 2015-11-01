@@ -22,10 +22,15 @@
 (defpreferences prefs "gradus_preferences")
 
 (defn- get-detail-layout
-  [activity query response]
-  (pprint response)
+  [activity query {:keys [status body]}]
   [:linear-layout {:orientation :vertical}
-   [:text-view {:text query}]])
+   [:text-view {:text query}]
+   [:text-view {:text body}]])
+
+(defn- get-error-layout
+  [activity error]
+  [:linear-layout {:orientation :vertical}
+   [:text-view {:text (str "An Error Occurred: " error)}]])
 
 (defactivity io.fardog.gradus.DetailActivity
   :key :detail
@@ -34,7 +39,10 @@
     (.superOnCreate this bundle)
     (neko.debug/keep-screen-on this)
     (on-ui
-      (let [extras   (.. this getIntent getExtras)
-            query    (:query (like-map extras))
-            response (http-get! query)]
-        (set-content-view! (*a) (get-detail-layout (*a) query @response))))))
+      (try
+        (let [extras   (.. this getIntent getExtras)
+              query    (:query (like-map extras))
+              response (http-get! query)]
+          (set-content-view! (*a) (get-detail-layout (*a) query @response)))
+        (catch Exception e
+          (set-content-view! (*a) (get-error-layout (*a) e)))))))

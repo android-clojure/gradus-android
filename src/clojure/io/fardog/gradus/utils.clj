@@ -25,7 +25,9 @@
     (and net-info (.isConnected net-info))))
 
 (defn http-get!
-  [query]
+  ([query]
+   (http-get! query {:accept :json}))
+  ([query headers]
   (if (not check-network!)
     (throw (Exception. "no network connection"))
     (let [resource  "word"
@@ -34,4 +36,4 @@
           url       (<< "https://api.wordnik.com/v4/~{resource}.json/"
                         "~{query}/~{section}?api_key=~{api-key}")]
       (future
-        (client/get url {:accept :json})))))
+        (client/get url headers))))))

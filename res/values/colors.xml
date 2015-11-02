@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <item name="purple" type="color">#AE0ACC</item>
     <item name="dim_purple" type="color">#732C7F</item>
     <item name="deep_purple" type="color">#6D067F</item>
     <item name="weak_purple" type="color">#E558FF</item>
     <item name="bright_purple" type="color">#D90CFF</item>
     <item name="white" type="color">#FFFFFF</item>
-
+    <item name="type_dark" type="color">#333333</item>
 </resources>

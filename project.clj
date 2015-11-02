@@ -12,6 +12,7 @@
   :plugins [[lein-droid "0.4.3"]]
 
   :dependencies [[org.clojure-android/clojure "1.7.0-r2"]
+                 [com.android.support/design "23.1.0" :extension "aar"]
                  [org.clojure/data.json "0.2.6"]
                  [clj-http-lite "0.3.0"]
                  [neko/neko "4.0.0-alpha5"]]

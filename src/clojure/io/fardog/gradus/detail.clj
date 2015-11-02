@@ -23,7 +23,7 @@
 
 (defn- get-item-layout
   [item]
-  [:text-view {:text (get item "text" "")}])
+  [:text-view {:text (:text item "")}])
 
 (defn- get-detail-layout
   [activity query {:keys [status body]}]

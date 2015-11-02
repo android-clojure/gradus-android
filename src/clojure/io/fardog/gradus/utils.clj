@@ -37,7 +37,8 @@
      (future
        (let [response (client/get url headers)]
          (if (= :json (:accept headers))
-           (assoc response :body (json/read-str (:body response)))
+           (assoc response :body (json/read-str (:body response)
+                                                :key-fn keyword))
            response))))))
 
 (defn wordnik-get!

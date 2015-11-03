@@ -1,6 +1,5 @@
 (ns io.fardog.gradus.detail
-    (:require [io.fardog.gradus.utils :refer [check-network! wordnik-get!]]
-              [clojure.pprint :refer [pprint]]
+    (:require [io.fardog.gradus.utils :refer [wordnik-get!]]
               [neko.activity :refer [defactivity set-content-view!]]
               [neko.data :refer [like-map]]
               [neko.data.shared-prefs :refer [defpreferences]]
@@ -11,6 +10,7 @@
               [neko.find-view :refer [find-view]]
               [neko.threading :refer [on-ui]])
     (:import [android.app Activity]
+             android.os.Build$VERSION
              [android.support.v7.app AppCompatActivity]
              [android.net ConnectivityManager NetworkInfo]
              [android.os AsyncTask]))
@@ -69,6 +69,10 @@
     (.superOnCreate this bundle)
     (neko.debug/keep-screen-on this)
 
+    (when (>= Build$VERSION/SDK_INT 21)
+      (.addFlags (.getWindow this)
+                 android.view.WindowManager$LayoutParams/FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS))
+
     (on-ui
       ; set up the action bar
       (.setDisplayHomeAsUpEnabled (.getSupportActionBar this) true)
@@ -81,4 +85,10 @@
               response (wordnik-get! query)]
           (set-content-view! (*a) (get-detail-layout (*a) query @response)))
         (catch Exception e
-          (set-content-view! (*a) (get-error-layout (*a) e)))))))
+          (set-content-view! (*a) (get-error-layout (*a) e))))))
+
+  (onOptionsItemSelected [this item]
+    (if (= (.getItemId item) android.R$id/home)
+      (.finish this)
+      (.superOnOptionsItemSelected this item))
+    true))

@@ -8,7 +8,10 @@
               [neko.resource :as res]
               [neko.find-view :refer [find-view]]
               [neko.threading :refer [on-ui]])
-    (:import android.widget.EditText 
+    (:import [android.app Activity]
+             android.widget.EditText 
+             android.os.Build$VERSION
+             [android.support.v7.app AppCompatActivity]
              [android.content Intent]))
 
 ;; We execute this function to import all subclasses of R class. This gives us
@@ -32,24 +35,36 @@
 (defn- get-settings-layout 
   [activity]
   [:linear-layout {:orientation :vertical}
-   [:linear-layout {:orientation :horizontal
-                    :layout-width :match-parent}
-    [:edit-text {:id ::apikey-input
-                 :hint R$string/api_key_input
-                 :text (:api-key @prefs "")
-                 :layout-width 0
-                 :layout-weight 1}]
-    [:button {:text R$string/api_key_save_button
-              :on-click (fn [_] (save-api-key activity))}]]])
+   [:edit-text {:id ::apikey-input
+                :hint R$string/api_key_input
+                :text (:api-key @prefs "")}]
+   [:button {:text R$string/api_key_save_button
+             :on-click (fn [_] (save-api-key activity))}]])
 
 ;; This is how an Activity is defined. We create one and specify its onCreate
 ;; method. Inside we create a user interface that consists of an edit and a
 ;; button. We also give set callback to the button.
 (defactivity io.fardog.gradus.SettingsActivity
   :key :settings
+  :extends AppCompatActivity
 
   (onCreate [this bundle]
     (.superOnCreate this bundle)
     (neko.debug/keep-screen-on this)
+
+    (when (>= Build$VERSION/SDK_INT 21)
+      (.addFlags (.getWindow this)
+                 android.view.WindowManager$LayoutParams/FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS))
+
     (on-ui
-      (set-content-view! (*a) (get-settings-layout (*a))))))
+      (.setDisplayHomeAsUpEnabled (.getSupportActionBar (*a)) true)
+      (.setHomeButtonEnabled (.getSupportActionBar (*a)) true)
+      (.setTitle (.getSupportActionBar (*a)) "Settings")
+
+      (set-content-view! (*a) (get-settings-layout (*a)))))
+
+  (onOptionsItemSelected [this item]
+    (if (= (.getItemId item) android.R$id/home)
+      (.finish this)
+      (.superOnOptionsItemSelected this item))
+    true))

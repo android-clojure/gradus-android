@@ -10,7 +10,10 @@
               [neko.find-view :refer [find-view]]
               [neko.threading :refer [on-ui]])
     (:import [android.app Activity]
-             [android.support.v7.app AppCompatActivity]))
+             android.os.Build$VERSION
+             [android.support.v7.app AppCompatActivity]
+             [android.support.v4.widget DrawerLayout DrawerLayout$DrawerListener]
+             [android.support.v7.app AppCompatActivity ActionBarDrawerToggle]))
 
 ;; We execute this function to import all subclasses of R class. This gives us
 ;; access to all application resources.
@@ -43,17 +46,19 @@
                   :hint R$string/query_input}]
      [:button {:text R$string/query_button
                :layout-width :wrap-content
-               :on-click (fn [_] (do-query activity))}]]
-    [:button {:text "Settings"
-              :on-click (fn [_] (launch-settings activity))}]]
+               :on-click (fn [_] (do-query activity))}]]]
    [:navigation-view {:id ::navbar
                       :layout-width [200 :dp]
                       :layout-height :fill
                       :layout-gravity :left
                       :menu [[:item {:title "Settings"
-                                     :icon R$drawable/ic_launcher
+                                     :icon android.R$drawable/ic_menu_preferences
                                      :show-as-action [:always :with-text]
-                                     :on-click (fn [_] (launch-settings activity))}]]}]])
+                                     :on-click (fn [_] (launch-settings activity))}]
+                             [:item {:title "About"
+                                     :icon android.R$drawable/ic_menu_info_details
+                                     :show-as-action [:always :with-text]
+                                     :on-click (fn [_] (toast "TODO" :long))}]]}]])
 
 (defn refresh-ui [^Activity activity]
   (.syncState (find-view activity :neko.ui/drawer-toggle))
@@ -66,6 +71,11 @@
   (onCreate [this bundle]
     (.superOnCreate this bundle)
     (neko.debug/keep-screen-on this)
+
+    (when (>= Build$VERSION/SDK_INT 21)
+      (.addFlags (.getWindow this)
+                 android.view.WindowManager$LayoutParams/FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS))
+
     (on-ui
       (.setDisplayHomeAsUpEnabled (.getSupportActionBar (*a)) true)
       (.setHomeButtonEnabled (.getSupportActionBar (*a)) true)
@@ -73,4 +83,16 @@
       (set-content-view! (*a) (get-main-layout (*a)))
       (refresh-ui (*a))
       (if (empty? (:api-key @prefs))
-        (launch-settings (*a))))))
+        (launch-settings (*a)))))
+
+  (onPostCreate [this bundle]
+    (.superOnPostCreate this bundle)
+    (.syncState (find-view this :neko.ui/drawer-toggle)))
+
+  (onOptionsItemSelected [this item]
+    false
+    (if (.onOptionsItemSelected (find-view this :neko.ui/drawer-toggle) item)
+      true
+      (.superOnOptionsItemSelected this item))))
+
+
